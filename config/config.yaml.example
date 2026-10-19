@@ -1,0 +1,7 @@
+# Copy to config.yaml for local overrides. config.yaml is ignored by git.
+
+database:
+  password: change-me  # same value as POSTGRES_PASSWORD in .env
+
+logging:
+  level: DEBUG

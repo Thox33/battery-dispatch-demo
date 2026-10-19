@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+
+# Tools
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Editors
+.idea/
+.vscode/
+
+# Local configuration, may contain credentials
+.env
+config/config.yaml
+
+# Local agent instructions, never published
+AGENTS.md

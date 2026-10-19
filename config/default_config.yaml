@@ -1,0 +1,17 @@
+# Defaults for local development. Overrides go into config.yaml (not under version
+# control) or into environment variables, see battery_dispatch/config/config_manager.py.
+
+database:
+  host: localhost
+  port: 5432
+  name: battery_dispatch
+  user: battery_dispatch
+  pool_size: 5
+  health_timeout_s: 2.0
+
+http:
+  host: 127.0.0.1
+  port: 8000
+
+logging:
+  config_file: config/logging.yaml

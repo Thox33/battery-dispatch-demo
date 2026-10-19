@@ -1,0 +1,31 @@
+services:
+  db:
+    image: timescale/timescaledb:2.17.2-pg17
+    environment:
+      POSTGRES_DB: battery_dispatch
+      POSTGRES_USER: battery_dispatch
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is not set, see .env.example}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U battery_dispatch -d battery_dispatch"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      BATTERY_DISPATCH_DATABASE__HOST: db
+      BATTERY_DISPATCH_DATABASE__PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is not set, see .env.example}
+      BATTERY_DISPATCH_HTTP__HOST: 0.0.0.0
+    ports:
+      - "${API_PORT:-8000}:8000"
+
+volumes:
+  db-data:
