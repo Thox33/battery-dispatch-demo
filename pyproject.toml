@@ -11,6 +11,7 @@ dependencies = [
     "asyncpg>=0.32.0",
     "fastapi>=0.148.0",
     "httpx2>=2.14.0",
+    "pulp>=3.3,<4",
     "pydantic>=2.14.1",
     "pydantic-settings>=2.16.0",
     "pyyaml>=6.0.3",
@@ -87,3 +88,7 @@ asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
 addopts = ["--strict-markers", "--strict-config"]
 markers = ["integration: needs a running TimescaleDB (docker compose up db)"]
+filterwarnings = [
+    # PuLP 3.3 announces API changes of PuLP 4, which is deliberately not used.
+    'ignore:.*PuLP 4\.0:DeprecationWarning',
+]

@@ -20,5 +20,9 @@ http:
   host: 127.0.0.1
   port: 8000
 
+optimization:
+  solver_time_limit_s: 30.0
+  mip_gap_rel: 0.005
+
 logging:
   config_file: config/logging.yaml
