@@ -6,6 +6,7 @@ from fastapi import Depends, Request
 
 from battery_dispatch.core.controller import Controller
 from battery_dispatch.market_data.price_importer import PriceImporter
+from battery_dispatch.optimization.dispatch_planner import DispatchPlanner
 from battery_dispatch.storage.repositories.price_repository import PriceRepository
 
 
@@ -22,3 +23,9 @@ def get_price_repository(
     controller: Annotated[Controller, Depends(get_controller)],
 ) -> PriceRepository:
     return controller.prices
+
+
+def get_dispatch_planner(
+    controller: Annotated[Controller, Depends(get_controller)],
+) -> DispatchPlanner:
+    return controller.dispatch_planner

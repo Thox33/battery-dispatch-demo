@@ -3,12 +3,15 @@
 from collections.abc import Sequence
 from datetime import datetime
 
-from battery_dispatch.config.config_manager import DatabaseConfig, SmardConfig
+from battery_dispatch.config.config_manager import DatabaseConfig, OptimizationConfig, SmardConfig
 from battery_dispatch.core.component_base import ComponentBase
 from battery_dispatch.core.health import ComponentHealth, HealthState
 from battery_dispatch.market_data.models import ImportResult, PricePoint
 from battery_dispatch.market_data.price_importer import PriceImporter
 from battery_dispatch.market_data.smard_client import SmardClient, SmardError
+from battery_dispatch.optimization.battery import BatteryParameters
+from battery_dispatch.optimization.dispatch_planner import DispatchPlanner
+from battery_dispatch.optimization.schedule import Schedule
 from battery_dispatch.storage.repositories.price_repository import PriceRepository
 from battery_dispatch.storage.storage_manager import StorageManager
 
@@ -84,3 +87,17 @@ class FakePriceImporter(PriceImporter):
         if self.fail:
             raise SmardError("request to SMARD failed")
         return self.result
+
+
+class FakeDispatchPlanner(DispatchPlanner):
+    def __init__(self, schedule: Schedule, error: Exception | None = None) -> None:
+        super().__init__(FakePriceRepository(), OptimizationConfig())
+        self.schedule = schedule
+        self.error = error
+        self.requests: list[tuple[datetime, datetime, BatteryParameters]] = []
+
+    async def plan(self, start: datetime, end: datetime, battery: BatteryParameters) -> Schedule:
+        self.requests.append((start, end, battery))
+        if self.error is not None:
+            raise self.error
+        return self.schedule

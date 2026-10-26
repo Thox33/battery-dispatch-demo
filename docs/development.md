@@ -39,6 +39,7 @@ battery_dispatch/
   config/                  configuration from YAML and environment variables
   logging_setup/           logging configuration
   market_data/             price model, SMARD client, importer
+  optimization/            battery parameters, schedule, optimiser, dispatch planner
   storage/                 database access, migrations
     adapters/timescaledb/
     repositories/          price repository and table definitions
@@ -50,7 +51,8 @@ tests/                     mirrors the package structure
 ```
 
 The controller creates the components and manages their lifecycle. See
-[ADR 0001](decisions/0001-controller-and-components.md).
+[ADR 0001](decisions/0001-controller-and-components.md). The dispatch planner holds no
+resources of its own; the controller creates it, but it is not a component.
 
 ## Configuration
 
@@ -74,5 +76,7 @@ A simplified Gitflow:
 | `develop` | integration branch, default branch |
 | `feature-*` | individual changes, pull request into `develop` |
 
-Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/).
+Work packages run through the [planner, builder and reviewer workflow](workflow.md); their
+branch is named in the plan. Commit messages follow
+[Conventional Commits](https://www.conventionalcommits.org/).
 Every pull request runs the CI checks `code-style` (Ruff, Pyright) and `test` (pytest).

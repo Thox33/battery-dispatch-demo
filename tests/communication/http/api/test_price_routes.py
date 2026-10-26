@@ -106,3 +106,21 @@ def test_get_prices_rejects_naive_datetimes(client: TestClient) -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_import_too_long_range_names_the_limit(client: TestClient) -> None:
+    response = client.post(
+        "/prices/import", json={"start": "2026-01-01T00:00:00Z", "end": "2026-06-01T00:00:00Z"}
+    )
+
+    assert response.status_code == 422
+    assert "time range must not exceed 92 days" in response.json()["detail"][0]["msg"]
+
+
+def test_get_prices_too_long_range_names_the_limit(client: TestClient) -> None:
+    response = client.get(
+        "/prices", params={"start": "2026-01-01T00:00:00Z", "end": "2027-01-03T00:00:00Z"}
+    )
+
+    assert response.status_code == 422
+    assert "time range must not exceed 366 days" in response.json()["detail"][0]["msg"]
