@@ -17,9 +17,11 @@ exactly. This project implements that as a small, complete backend service.
 | Endpoint | Purpose | Status |
 |---|---|---|
 | `GET /health` | State of the application and the database | available |
-| `POST /prices/import` | Load prices for a time range | planned |
-| `GET /prices` | Query prices for a time range | planned |
+| `POST /prices/import` | Load prices for a time range | available |
+| `GET /prices` | Query prices for a time range | available |
 | `POST /dispatch/optimize` | Compute schedule and expected revenue | planned |
+
+Details in [api.md](api.md).
 
 If time permits: a comparison with a simple threshold strategy and a small chart of the
 schedule.
