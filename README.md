@@ -5,8 +5,10 @@ application fetches wholesale prices for Germany from the open SMARD API of the 
 Federal Network Agency, stores them in TimescaleDB and computes a revenue-maximising
 charge and discharge schedule.
 
-A small demonstration project, not a product. Status: price import and optimisation
-work; a comparison with a simple strategy and a chart of the schedule are open.
+A small demonstration project, not a product. Status: price import, optimisation and a
+web page with the schedule work; a comparison with a simple strategy is open.
+
+![Schedule for 25 October 2026](docs/images/ui.png)
 
 ## Quick start
 
@@ -17,7 +19,9 @@ cp .env.example .env
 docker compose up --build
 ```
 
-The API answers at <http://localhost:8000/health>, the OpenAPI description is at
+The page at <http://localhost:8000/> optimises today's schedule and imports missing prices
+on its own, see [docs/ui.md](docs/ui.md). The API answers at
+<http://localhost:8000/health>, the OpenAPI description is at
 <http://localhost:8000/docs>. To load one day of prices:
 
 ```bash
@@ -42,10 +46,15 @@ its limitations are described in [docs/problem.md](docs/problem.md).
 
 - [Problem and background](docs/problem.md)
 - [API: time ranges, endpoints, errors](docs/api.md)
+- [Web page: use, charts, mapping to the API](docs/ui.md)
 - [Development: structure, tooling, branches](docs/development.md)
 - [Architecture decisions](docs/decisions/)
 - [Workflow: planner, builder, reviewer](docs/workflow.md) and [plans](docs/plans/)
 
 ## License
 
-MIT, see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE). The bundled chart library uPlot is MIT licensed as well, see
+`battery_dispatch/communication/http/frontend/vendor/LICENSE`.
+
+Price data: Bundesnetzagentur | [SMARD.de](https://www.smard.de), licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

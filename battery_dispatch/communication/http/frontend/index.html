@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Battery dispatch</title>
+  <link rel="stylesheet" href="vendor/uPlot.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="vendor/uPlot.iife.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <div>
+        <h1>Battery dispatch</h1>
+        <p class="subtitle">Revenue-maximising schedule against DE-LU day-ahead prices</p>
+      </div>
+      <p class="health" id="health" title="Checking the API">
+        <span class="health-dot" aria-hidden="true"></span>
+        <span id="health-text">API</span>
+      </p>
+    </header>
+
+    <main>
+      <form id="form" class="panel form" novalidate>
+        <div class="range">
+          <label class="field">
+            <span class="field-label">From</span>
+            <input type="date" id="from" name="from" required>
+          </label>
+          <label class="field">
+            <span class="field-label">To</span>
+            <input type="date" id="to" name="to" required>
+          </label>
+          <button type="submit" id="optimise">Optimise</button>
+        </div>
+
+        <details id="battery" class="battery" open>
+          <summary>Battery</summary>
+          <div class="params">
+            <label class="field">
+              <span class="field-label">Capacity <span class="unit">kWh</span></span>
+              <input type="number" id="capacity_kwh" value="1000" min="0.1" step="any" inputmode="decimal">
+            </label>
+            <label class="field">
+              <span class="field-label">Charge power <span class="unit">kW</span></span>
+              <input type="number" id="max_charge_kw" value="500" min="0.1" step="any" inputmode="decimal">
+            </label>
+            <label class="field">
+              <span class="field-label">Discharge power <span class="unit">kW</span></span>
+              <input type="number" id="max_discharge_kw" value="500" min="0.1" step="any" inputmode="decimal">
+            </label>
+            <label class="field">
+              <span class="field-label">Charge efficiency</span>
+              <input type="number" id="charge_efficiency" value="0.95" min="0.5" max="1" step="0.01" inputmode="decimal">
+            </label>
+            <label class="field">
+              <span class="field-label">Discharge efficiency</span>
+              <input type="number" id="discharge_efficiency" value="0.95" min="0.5" max="1" step="0.01" inputmode="decimal">
+            </label>
+            <label class="field">
+              <span class="field-label">SoC min <span class="unit">of capacity</span></span>
+              <input type="number" id="soc_min" value="0.1" min="0" max="1" step="0.05" inputmode="decimal">
+            </label>
+            <label class="field">
+              <span class="field-label">SoC max <span class="unit">of capacity</span></span>
+              <input type="number" id="soc_max" value="0.9" min="0" max="1" step="0.05" inputmode="decimal">
+            </label>
+            <label class="field">
+              <span class="field-label">SoC start <span class="unit">of capacity</span></span>
+              <input type="number" id="soc_initial" value="0.5" min="0" max="1" step="0.05" inputmode="decimal">
+            </label>
+            <label class="field">
+              <span class="field-label">Degradation <span class="unit">EUR/MWh</span></span>
+              <input type="number" id="degradation_cost_eur_per_mwh" value="0" min="0" step="any" inputmode="decimal">
+            </label>
+          </div>
+        </details>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </form>
+
+      <section aria-label="Key figures">
+        <dl class="figures">
+          <div class="figure">
+            <dt>Revenue</dt>
+            <dd id="fig-revenue">-</dd>
+          </div>
+          <div class="figure">
+            <dt>Degradation cost</dt>
+            <dd id="fig-degradation">-</dd>
+          </div>
+          <div class="figure">
+            <dt>Charged</dt>
+            <dd id="fig-charged">-</dd>
+          </div>
+          <div class="figure">
+            <dt>Discharged</dt>
+            <dd id="fig-discharged">-</dd>
+          </div>
+          <div class="figure">
+            <dt>Full cycles</dt>
+            <dd id="fig-cycles">-</dd>
+          </div>
+          <div class="figure">
+            <dt>Solver</dt>
+            <dd id="fig-solver">-</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="panel chart-panel" aria-labelledby="power-title">
+        <div class="chart-head">
+          <h2 id="power-title">Price and power</h2>
+          <p class="axis-note">Price left, power right. Discharge above zero, charge below.</p>
+        </div>
+        <div id="readout" class="readout" aria-live="off">
+          <span class="readout-time" id="readout-time">Point at a chart to read the values</span>
+          <span class="readout-item"><span class="swatch swatch-price"></span>Price <b id="readout-price"></b></span>
+          <span class="readout-item"><span class="swatch swatch-charge"></span>Charge <b id="readout-charge"></b></span>
+          <span class="readout-item"><span class="swatch swatch-discharge"></span>Discharge <b id="readout-discharge"></b></span>
+          <span class="readout-item"><span class="swatch swatch-soc"></span>State of charge <b id="readout-soc"></b></span>
+        </div>
+        <div id="chart-power" class="chart" role="img" aria-label="Chart of price, charge and discharge power per quarter hour"><p class="empty">No schedule yet.</p></div>
+      </section>
+
+      <section class="panel chart-panel" aria-labelledby="soc-title">
+        <div class="chart-head">
+          <h2 id="soc-title">State of charge</h2>
+          <p class="axis-note">Stored energy at the end of each quarter hour, dashed lines at the limits.</p>
+        </div>
+        <div id="chart-soc" class="chart chart-small" role="img" aria-label="Chart of the state of charge per quarter hour"><p class="empty">No schedule yet.</p></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        Price data: <a href="https://www.smard.de" rel="noopener">Bundesnetzagentur | SMARD.de</a>,
+        licensed under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>.
+        Times in Europe/Berlin. API description at <a href="/docs">/docs</a>.
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

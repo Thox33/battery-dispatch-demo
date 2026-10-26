@@ -21,10 +21,10 @@ exactly. This project implements that as a small, complete backend service.
 | `GET /prices` | Query prices for a time range | available |
 | `POST /dispatch/optimize` | Compute schedule and expected revenue | available |
 
-Details in [api.md](api.md).
+Details in [api.md](api.md). A web page at `/ui/` shows the schedule in two charts, see
+[ui.md](ui.md).
 
-If time permits: a comparison with a simple threshold strategy and a small chart of the
-schedule.
+If time permits: a comparison with a simple threshold strategy.
 
 Deliberately left out: user management, multi-tenancy, forecasting, connection to trading
 venues.
@@ -60,7 +60,9 @@ PuLP to optimality within a relative gap of 0.5 %. See
 
 ## Data source
 
-SMARD by the German Federal Network Agency, open, no API key.
+SMARD by the German Federal Network Agency, open, no API key. The data is published under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) and must be attributed as
+"Bundesnetzagentur | SMARD.de"; the web page shows this line below its charts.
 
 Index of available weekly packages, timestamps in milliseconds since epoch:
 
