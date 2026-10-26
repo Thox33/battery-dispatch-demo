@@ -10,4 +10,4 @@ was decided and verified.
 | Scaffold: controller, configuration, storage, `/health` | none, before this workflow | done |
 | Price import from SMARD | none, before this workflow | done |
 | WP1 Dispatch optimisation | [wp1-dispatch-optimization.md](wp1-dispatch-optimization.md) | done |
-| WP2 Schedule visualisation | not yet written | open |
+| WP2 Schedule visualisation | [wp2-schedule-visualisation.md](wp2-schedule-visualisation.md) | done |
