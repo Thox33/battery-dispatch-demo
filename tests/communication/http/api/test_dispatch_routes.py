@@ -16,6 +16,7 @@ from battery_dispatch.optimization.battery import BatteryParameters
 from battery_dispatch.optimization.dispatch_planner import PricesIncompleteError
 from battery_dispatch.optimization.milp_optimizer import OptimizationError
 from battery_dispatch.optimization.schedule import Schedule, ScheduleStep
+from battery_dispatch.storage.errors import StorageUnavailableError
 from tests.fakes import FakeComponent, FakeDispatchPlanner
 
 
@@ -290,6 +291,15 @@ def test_database_error_returns_503(client: TestClient, planner: FakeDispatchPla
     response = client.post("/dispatch/optimize", json=body())
 
     assert response.status_code == 503
+
+
+def test_unavailable_database_returns_503(client: TestClient, planner: FakeDispatchPlanner) -> None:
+    planner.error = StorageUnavailableError("database unavailable: TimeoutError")
+
+    response = client.post("/dispatch/optimize", json=body())
+
+    assert response.status_code == 503
+    assert response.json() == {"detail": "database unavailable"}
 
 
 def test_too_long_range_names_the_limit(client: TestClient) -> None:

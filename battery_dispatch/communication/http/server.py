@@ -15,6 +15,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from battery_dispatch import __version__
 from battery_dispatch.communication.http.api import dispatch_routes, health_routes, price_routes
 from battery_dispatch.core.controller import Controller
+from battery_dispatch.storage.errors import StorageUnavailableError
 
 
 logger = logging.getLogger(__name__)
@@ -37,6 +38,7 @@ def create_app(controller: Controller) -> FastAPI:
     app.include_router(dispatch_routes.router)
     app.add_exception_handler(RequestValidationError, _validation_error)
     app.add_exception_handler(SQLAlchemyError, _database_error)
+    app.add_exception_handler(StorageUnavailableError, _database_error)
     return app
 
 
