@@ -15,6 +15,11 @@ uv run ruff check .
 uv run pyright
 ```
 
+Tests marked `integration` run against TimescaleDB and are skipped if it is not reachable.
+Start it with `docker compose up -d db`. CI sets `BATTERY_DISPATCH_REQUIRE_DB=1`, which
+turns the skip into a failure. The tests only touch rows of bidding zones starting with
+`TEST-`.
+
 To run locally against the database from docker compose, put the password from `.env`
 into `config/config.yaml` (template: `config/config.yaml.example`).
 
@@ -33,17 +38,22 @@ battery_dispatch/
   core/                    controller, component base, health model
   config/                  configuration from YAML and environment variables
   logging_setup/           logging configuration
+  market_data/             price model, SMARD client, importer
+  optimization/            battery parameters, schedule, optimiser, dispatch planner
   storage/                 database access, migrations
     adapters/timescaledb/
+    repositories/          price repository and table definitions
     migrations/
   communication/http/      FastAPI server, dependencies, routes
-    api/
+    api/                   routes and request/response models
+    frontend/              web page served at /ui/, vendored uPlot under vendor/
 config/                    default_config.yaml, logging.yaml, template for config.yaml
 tests/                     mirrors the package structure
 ```
 
 The controller creates the components and manages their lifecycle. See
-[ADR 0001](decisions/0001-controller-and-components.md).
+[ADR 0001](decisions/0001-controller-and-components.md). The dispatch planner holds no
+resources of its own; the controller creates it, but it is not a component.
 
 ## Configuration
 
@@ -67,5 +77,7 @@ A simplified Gitflow:
 | `develop` | integration branch, default branch |
 | `feature-*` | individual changes, pull request into `develop` |
 
-Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/).
+Work packages run through the [planner, builder and reviewer workflow](workflow.md); their
+branch is named in the plan. Commit messages follow
+[Conventional Commits](https://www.conventionalcommits.org/).
 Every pull request runs the CI checks `code-style` (Ruff, Pyright) and `test` (pytest).

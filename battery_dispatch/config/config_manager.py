@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from pydantic import BaseModel, SecretStr
+from pydantic import BaseModel, Field, SecretStr
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 
 
@@ -32,9 +32,25 @@ class DatabaseConfig(BaseModel):
     health_timeout_s: float = 2.0
 
 
+class SmardConfig(BaseModel):
+    base_url: str = "https://www.smard.de/app/chart_data"
+    filter_id: int = 4169  # wholesale price Germany/Luxembourg
+    region: str = "DE"
+    resolution: str = "quarterhour"
+    timeout_s: float = 10.0
+
+
 class HttpConfig(BaseModel):
     host: str = "127.0.0.1"
     port: int = 8000
+
+
+class OptimizationConfig(BaseModel):
+    solver_time_limit_s: float = 30.0
+    # The solver stops once the schedule is proven to be within this fraction of the
+    # best possible revenue. Proving a tighter gap can take minutes on long blocks of
+    # equal negative prices.
+    mip_gap_rel: float = Field(default=5e-3, ge=0, lt=1)
 
 
 class LoggingConfig(BaseModel):
@@ -50,7 +66,9 @@ class AppConfig(BaseSettings):
     )
 
     database: DatabaseConfig = DatabaseConfig()
+    smard: SmardConfig = SmardConfig()
     http: HttpConfig = HttpConfig()
+    optimization: OptimizationConfig = OptimizationConfig()
     logging: LoggingConfig = LoggingConfig()
 
     @classmethod

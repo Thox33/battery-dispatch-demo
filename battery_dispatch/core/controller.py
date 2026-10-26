@@ -9,6 +9,10 @@ from battery_dispatch import __version__
 from battery_dispatch.config.config_manager import AppConfig
 from battery_dispatch.core.component_base import ComponentBase
 from battery_dispatch.core.health import ComponentHealth, HealthState, SystemHealth
+from battery_dispatch.market_data.price_importer import PriceImporter
+from battery_dispatch.market_data.smard_client import SmardClient
+from battery_dispatch.optimization.dispatch_planner import DispatchPlanner
+from battery_dispatch.storage.repositories.price_repository import PriceRepository
 from battery_dispatch.storage.storage_manager import StorageManager
 
 
@@ -19,7 +23,12 @@ class Controller:
     def __init__(self, config: AppConfig) -> None:
         self.config = config
         self.storage = StorageManager(config.database)
-        self.components: list[ComponentBase] = [self.storage]
+        self.smard = SmardClient(config.smard)
+        self.prices = PriceRepository(self.storage)
+        self.price_importer = PriceImporter(self.smard, self.prices)
+        # The planner holds no resources of its own and is therefore not a component.
+        self.dispatch_planner = DispatchPlanner(self.prices, config.optimization)
+        self.components: list[ComponentBase] = [self.storage, self.smard]
         self._started: list[ComponentBase] = []
 
     async def start(self) -> None:

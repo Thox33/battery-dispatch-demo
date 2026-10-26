@@ -2,6 +2,7 @@ name: Code-Styles
 on:
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
 jobs:
   code-style:
     runs-on: ubuntu-latest
@@ -32,4 +33,9 @@ jobs:
       #              run pre-commit
       #----------------------------------------------
       - name: Run pre-commit
-        run: uv run pre-commit run --from-ref origin/$GITHUB_BASE_REF --to-ref HEAD
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            uv run pre-commit run --from-ref origin/$GITHUB_BASE_REF --to-ref HEAD
+          else
+            uv run pre-commit run --all-files
+          fi

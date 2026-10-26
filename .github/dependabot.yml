@@ -11,6 +11,10 @@ updates:
         dependency-type: "development"
       production:
         dependency-type: "production"
+    ignore:
+      # PuLP 4 no longer bundles the CBC solver and changed the modelling API.
+      - dependency-name: "pulp"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
