@@ -61,17 +61,22 @@ class FakePriceRepository(PriceRepository):
     def __init__(self, stored: list[PricePoint] | None = None) -> None:
         super().__init__(StorageManager(DatabaseConfig()))
         self.stored = stored or []
+        self.error: Exception | None = None
         self.upserts: list[tuple[str, list[PricePoint]]] = []
         self.queries: list[tuple[str, datetime, datetime]] = []
 
     async def upsert(self, bidding_zone: str, points: Sequence[PricePoint]) -> int:
         self.upserts.append((bidding_zone, list(points)))
+        if self.error is not None:
+            raise self.error
         return len(points)
 
     async def list_range(
         self, bidding_zone: str, start: datetime, end: datetime
     ) -> list[PricePoint]:
         self.queries.append((bidding_zone, start, end))
+        if self.error is not None:
+            raise self.error
         return self.stored
 
 
@@ -80,12 +85,15 @@ class FakePriceImporter(PriceImporter):
         super().__init__(FakeSmardClient([]), FakePriceRepository())
         self.result = result or ImportResult(fetched=0, written=0)
         self.fail = fail
+        self.error: Exception | None = None
         self.requests: list[tuple[datetime, datetime]] = []
 
     async def import_range(self, start: datetime, end: datetime) -> ImportResult:
         self.requests.append((start, end))
         if self.fail:
             raise SmardError("request to SMARD failed")
+        if self.error is not None:
+            raise self.error
         return self.result
 
 

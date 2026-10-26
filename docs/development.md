@@ -46,6 +46,7 @@ battery_dispatch/
     migrations/
   communication/http/      FastAPI server, dependencies, routes
     api/                   routes and request/response models
+    frontend/              web page served at /ui/, vendored uPlot under vendor/
 config/                    default_config.yaml, logging.yaml, template for config.yaml
 tests/                     mirrors the package structure
 ```

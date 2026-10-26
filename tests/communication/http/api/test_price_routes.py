@@ -12,6 +12,7 @@ from battery_dispatch.communication.http.server import create_app
 from battery_dispatch.config.config_manager import AppConfig
 from battery_dispatch.core.controller import Controller
 from battery_dispatch.market_data.models import ImportResult, PricePoint
+from battery_dispatch.storage.errors import StorageUnavailableError
 from tests.fakes import FakeComponent, FakePriceImporter, FakePriceRepository
 
 
@@ -86,6 +87,19 @@ def test_import_smard_failure_returns_502(client: TestClient, importer: FakePric
     assert response.status_code == 502
 
 
+def test_import_with_unavailable_database_returns_503(
+    client: TestClient, importer: FakePriceImporter
+) -> None:
+    importer.error = StorageUnavailableError("database unavailable: ConnectionRefusedError")
+
+    response = client.post(
+        "/prices/import", json={"start": "2026-10-26T00:00:00Z", "end": "2026-10-27T00:00:00Z"}
+    )
+
+    assert response.status_code == 503
+    assert response.json() == {"detail": "database unavailable"}
+
+
 def test_get_prices(client: TestClient, repository: FakePriceRepository) -> None:
     response = client.get(
         "/prices", params={"start": "2026-10-26T00:00:00Z", "end": "2026-10-27T00:00:00Z"}
@@ -98,6 +112,19 @@ def test_get_prices(client: TestClient, repository: FakePriceRepository) -> None
         "prices": [{"time": "2026-10-26T00:00:00Z", "price_eur_per_mwh": -12.5}],
     }
     assert repository.queries == [("DE-LU", START, datetime(2026, 10, 27, tzinfo=UTC))]
+
+
+def test_get_prices_with_unavailable_database_returns_503(
+    client: TestClient, repository: FakePriceRepository
+) -> None:
+    repository.error = StorageUnavailableError("database unavailable: gaierror")
+
+    response = client.get(
+        "/prices", params={"start": "2026-10-26T00:00:00Z", "end": "2026-10-27T00:00:00Z"}
+    )
+
+    assert response.status_code == 503
+    assert response.json() == {"detail": "database unavailable"}
 
 
 def test_get_prices_rejects_naive_datetimes(client: TestClient) -> None:
