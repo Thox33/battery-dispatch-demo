@@ -30,6 +30,17 @@ uv run alembic upgrade head
 uv run battery-dispatch
 ```
 
+The TimescaleDB image is pinned in `docker-compose.yml` and in the CI workflow; change
+both together. Each image ships the older versions of the extension as well, so a
+database volume created with an earlier image keeps working after an image update and
+keeps its extension version. To move it to the version of the new image, run the update
+as the first command of a fresh session:
+
+```bash
+docker compose exec db psql -X -U battery_dispatch -d battery_dispatch \
+  -c "ALTER EXTENSION timescaledb UPDATE"
+```
+
 ## Structure
 
 ```
