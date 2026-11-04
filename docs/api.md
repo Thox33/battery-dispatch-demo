@@ -69,7 +69,7 @@ fill gaps.
 ## `POST /dispatch/optimize`
 
 Computes the revenue-maximising charge and discharge schedule for a battery from the
-stored prices of the range. The model is described in [problem.md](problem.md#optimisation).
+stored prices of the range. The model is described in [optimisation.md](optimisation.md).
 
 ```bash
 curl -X POST localhost:8000/dispatch/optimize \
