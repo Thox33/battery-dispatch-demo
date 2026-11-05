@@ -9,7 +9,7 @@ jobs:
     services:
       # Throwaway database for the integration tests, reachable without a password.
       timescaledb:
-        image: timescale/timescaledb:2.17.2-pg17
+        image: timescale/timescaledb:2.30.2-pg17
         env:
           POSTGRES_DB: battery_dispatch
           POSTGRES_USER: battery_dispatch

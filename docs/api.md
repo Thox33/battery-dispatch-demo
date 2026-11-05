@@ -3,6 +3,16 @@
 The interactive OpenAPI description is served at `/docs` while the application runs.
 This page covers the rules that apply across endpoints.
 
+The `curl` examples are written for a POSIX shell such as bash, zsh or Git Bash. In
+Windows PowerShell 5.1, `curl` is an alias of `Invoke-WebRequest` and the examples do not
+work as written. The import there looks like this:
+
+```powershell
+Invoke-RestMethod -Method Post -Uri http://localhost:8000/prices/import `
+  -ContentType 'application/json' `
+  -Body '{"start": "2026-10-25T00:00:00+02:00", "end": "2026-10-26T00:00:00+01:00"}'
+```
+
 ## Time ranges
 
 - All ranges are half-open: `[start, end)`. A price belongs to the range if the quarter
@@ -59,7 +69,7 @@ fill gaps.
 ## `POST /dispatch/optimize`
 
 Computes the revenue-maximising charge and discharge schedule for a battery from the
-stored prices of the range. The model is described in [problem.md](problem.md#optimisation).
+stored prices of the range. The model is described in [optimisation.md](optimisation.md).
 
 ```bash
 curl -X POST localhost:8000/dispatch/optimize \

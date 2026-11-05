@@ -314,7 +314,7 @@ Changes and deviations:
 Split into two commits:
 
 - `fix(storage)`, exactly the changes in the patch
-  `C:\Users\Thorg\AppData\Local\Temp\claude\C--Users-Thorg-IdeaProjects-battery-dispatch-demo\2d3e5df5-5a72-474a-bc12-f1702eab40cf\scratchpad\fix-storage.patch`
+  `fix-storage.patch`, a scratch file
   (outside the repository, regenerated after review round 2). Stage it with
   `git apply --cached <patch>`, not with `git add -p`: both hunks of `server.py` mix
   storage and page lines (the first one the storage import with `Path`,

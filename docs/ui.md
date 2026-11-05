@@ -6,7 +6,7 @@ HTML, CSS and JavaScript under `battery_dispatch/communication/http/frontend/`, 
 build step. It uses only the API described in [api.md](api.md), so everything it shows can
 also be fetched with `curl`.
 
-![Schedule for 25 October 2026](images/ui.png)
+![Schedule for 29 July 2026](images/ui.png)
 
 ## Use
 

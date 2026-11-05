@@ -1,33 +1,59 @@
 # Development
 
+This document answers how to set up, run and change the project.
+
 ## Requirements
 
 - [uv](https://docs.astral.sh/uv/), it installs Python 3.12 itself if needed
 - Docker with docker compose
 
-## Commands
+## Setup
 
 ```bash
 uv sync
 uv run pre-commit install
-uv run pytest
-uv run ruff check .
-uv run pyright
+cp .env.example .env
+cp config/config.yaml.example config/config.yaml
 ```
 
-Tests marked `integration` run against TimescaleDB and are skipped if it is not reachable.
-Start it with `docker compose up -d db`. CI sets `BATTERY_DISPATCH_REQUIRE_DB=1`, which
-turns the skip into a failure. The tests only touch rows of bidding zones starting with
-`TEST-`.
+`.env` sets the password of the database from docker compose. Tests and runs on the host read
+it from `config/config.yaml`. The two examples hold the same value; if you change one, change
+the other. `BATTERY_DISPATCH_DATABASE__PASSWORD` can be set instead of the file.
 
-To run locally against the database from docker compose, put the password from `.env`
-into `config/config.yaml` (template: `config/config.yaml.example`).
+## Checks
+
+These are the checks every change has to pass:
 
 ```bash
-cp config/config.yaml.example config/config.yaml
+uv run ruff check .
+uv run ruff format --check .
+uv run pyright
+uv lock --check
+docker compose up -d db
+BATTERY_DISPATCH_REQUIRE_DB=1 uv run pytest
+uv run pre-commit run --all-files
+```
+
+What the tests need from the database, what a skip means and what the tests cover is described
+in [testing.md](testing.md#markers-and-the-database).
+
+To run the application on the host against the database from docker compose:
+
+```bash
 docker compose up -d db
 uv run alembic upgrade head
 uv run battery-dispatch
+```
+
+The TimescaleDB image is pinned in `docker-compose.yml` and in the CI workflow; change
+both together. Each image ships the older versions of the extension as well, so a
+database volume created with an earlier image keeps working after an image update and
+keeps its extension version. To move it to the version of the new image, run the update
+as the first command of a fresh session:
+
+```bash
+docker compose exec db psql -X -U battery_dispatch -d battery_dispatch \
+  -c "ALTER EXTENSION timescaledb UPDATE"
 ```
 
 ## Structure
@@ -53,7 +79,8 @@ tests/                     mirrors the package structure
 
 The controller creates the components and manages their lifecycle. See
 [ADR 0001](decisions/0001-controller-and-components.md). The dispatch planner holds no
-resources of its own; the controller creates it, but it is not a component.
+resources of its own; the controller creates it, but it is not a component. How the parts
+work together is described in [architecture.md](architecture.md).
 
 ## Configuration
 
