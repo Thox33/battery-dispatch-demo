@@ -21,5 +21,7 @@ htmlcov/
 .env
 config/config.yaml
 
-# Local agent instructions, never published
-AGENTS.md
+# Local agent instructions and settings, never published
+AGENTS.local.md
+CLAUDE.local.md
+.claude/settings.local.json

@@ -5,8 +5,8 @@ application fetches wholesale prices for Germany from the open SMARD API of the 
 Federal Network Agency, stores them in TimescaleDB and computes a revenue-maximising
 charge and discharge schedule.
 
-A small demonstration project, not a product. Status: price import, optimisation and a
-web page with the schedule work; a comparison with a simple strategy is open.
+A small demonstration project, not a product. Price import, optimisation and a web page
+with the schedule work. A comparison with a simple strategy is not included.
 
 ![Schedule for 29 July 2026](docs/images/ui.png)
 
@@ -30,12 +30,14 @@ prices from SMARD on its own, see [docs/ui.md](docs/ui.md). The API is described
 
 ## Documentation
 
-- [Problem and background](docs/problem.md)
-- [API: time ranges, endpoints, errors](docs/api.md)
-- [Web page: use, charts, mapping to the API](docs/ui.md)
-- [Development: structure, tooling, branches](docs/development.md)
-- [Architecture decisions](docs/decisions/)
-- [Workflow: planner, builder, reviewer](docs/workflow.md) and [plans](docs/plans/)
+[docs/README.md](docs/README.md) says which document answers which question.
+
+## How it was built
+
+Built with AI coding agents (Claude Code) under the author's direction. The author sets
+goals and scope, reviews and approves the design and every plan, and decides what is merged;
+agents write the code, tests and documents. Plans and review findings are in
+[docs/plans/](docs/plans/), the process in [docs/workflow.md](docs/workflow.md).
 
 ## License
 

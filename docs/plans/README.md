@@ -5,9 +5,10 @@ One plan file per work package, named `wp<number>-<short-name>.md` and created f
 reviewer, see [workflow](../workflow.md). Completed plans stay here as a record of what
 was decided and verified.
 
-| Work package | Plan | Status |
-| --- | --- | --- |
-| Scaffold: controller, configuration, storage, `/health` | none, before this workflow | done |
-| Price import from SMARD | none, before this workflow | done |
-| WP1 Dispatch optimisation | [wp1-dispatch-optimization.md](wp1-dispatch-optimization.md) | done |
-| WP2 Schedule visualisation | [wp2-schedule-visualisation.md](wp2-schedule-visualisation.md) | done |
+| Work package | Plan | Status | Review result |
+| --- | --- | --- | --- |
+| Scaffold: controller, configuration, storage, `/health` | none, before this workflow | done | none |
+| Price import from SMARD | none, before this workflow | done | none |
+| WP1 Dispatch optimisation | [wp1-dispatch-optimization.md](wp1-dispatch-optimization.md) | done | round 1: changes required; round 2: approve with minor findings |
+| WP2 Schedule visualisation | [wp2-schedule-visualisation.md](wp2-schedule-visualisation.md) | done | round 1: changes required; round 2: approve with minor findings |
+| WP3 Documentation and visible agent workflow | [wp3-docs-and-workflow.md](wp3-docs-and-workflow.md) | done | round 1: changes required; round 2: approve with minor findings |
